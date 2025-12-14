@@ -4,7 +4,6 @@ class Promotion(models.Model):
     description = models.CharField(max_length=255)
     discount = models.FloatField()
 
-
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     feature_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
@@ -18,6 +17,7 @@ class Product(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     collection = models.ForeignKey(Collection, on_delete=models.PROTECT)
     promotions = models.ManyToManyField(Promotion)
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
 
 
 class Customer(models.Model):

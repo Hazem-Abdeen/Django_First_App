@@ -1,0 +1,16 @@
+<h1>{{ product.title }}</h1>
+
+{% if product.image %}
+  <img src="{{ product.image.url }}" alt="{{ product.title }}" style="max-width:300px;">
+{% endif %}
+
+<p>Price: {{ product.unit_price }}</p>
+
+<form method="post" action="{% url 'cart-add' product.id %}">
+  {% csrf_token %}
+  <label>Quantity</label>
+  <input type="number" name="quantity" value="1" min="1">
+  <button type="submit">Add to basket</button>
+</form>
+
+<p><a href="{% url 'cart-detail' %}">Go to basket</a></p>
