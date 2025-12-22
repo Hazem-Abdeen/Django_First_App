@@ -1,0 +1,218 @@
+.lux-body{
+  background: #070a0d;
+  color: #e8edf2;
+}
+
+.lux-main{
+  padding-top: 110px;
+}
+
+.lux-container{
+  max-width: 1180px;
+}
+
+.lux-back{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: rgba(255,255,255,.65);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-size: 12px;
+  transition: color .2s ease;
+}
+.lux-back:hover{ color: #c8a452; }
+.lux-back-icon{
+  display:inline-block;
+  transform: translateY(-1px);
+}
+
+.lux-image-wrap{
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  overflow: hidden;
+}
+
+.lux-tag{
+  position:absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+  padding: 6px 10px;
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #c8a452;
+  background: rgba(0,0,0,.45);
+  border: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(8px);
+}
+
+.lux-image{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display:block;
+}
+
+.lux-title{
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(34px, 4vw, 54px);
+  margin-bottom: 12px;
+}
+
+.lux-rating{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.lux-stars{
+  color: #c8a452;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+.lux-reviews{
+  color: rgba(255,255,255,.55);
+  font-size: 13px;
+}
+
+.lux-price{
+  color: #c8a452;
+  font-size: 26px;
+  font-weight: 300;
+  margin-bottom: 14px;
+}
+
+.lux-desc{
+  color: rgba(255,255,255,.72);
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 26px;
+}
+
+.lux-specs{
+  border-top: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  padding: 22px 0;
+  margin-bottom: 22px;
+}
+.lux-specs-title{
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .2em;
+  margin-bottom: 16px;
+  font-family: Georgia, "Times New Roman", serif;
+}
+.lux-specs-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 30px;
+}
+.lux-spec-label{
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: rgba(255,255,255,.38);
+  margin-bottom: 6px;
+}
+.lux-spec-value{
+  color: rgba(255,255,255,.92);
+  font-weight: 300;
+}
+
+.lux-cart{
+  margin-top: 18px;
+}
+.lux-cart-form{
+  display:flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lux-qty{
+  display:inline-flex;
+  align-items:center;
+  border: 1px solid rgba(255,255,255,.10);
+  width: fit-content;
+}
+.lux-qty-btn{
+  background: transparent;
+  border: 0;
+  color: rgba(255,255,255,.70);
+  padding: 10px 14px;
+  font-size: 18px;
+  transition: background .2s ease;
+}
+.lux-qty-btn:hover{
+  background: rgba(255,255,255,.05);
+}
+.lux-qty-input{
+  width: 80px;
+  text-align: center;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  outline: none;
+  font-weight: 300;
+}
+
+.lux-add-btn{
+  width: 100%;
+  background: #c8a452;
+  color: #000;
+  border: 0;
+  padding: 14px 16px;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  transition: transform .12s ease, background .2s ease;
+}
+.lux-add-btn:hover{
+  background: #fff;
+  transform: scale(1.01);
+}
+
+.lux-note{
+  margin-top: 10px;
+  text-align:center;
+  color: rgba(255,255,255,.50);
+  font-size: 13px;
+}
+
+.lux-badges{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  padding-top: 18px;
+  margin-top: 22px;
+}
+
+.lux-badge{
+  text-align:center;
+}
+.lux-badge-icon{
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 10px auto;
+  border-radius: 50%;
+  background: rgba(255,255,255,.05);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: #c8a452;
+  font-weight: 700;
+}
+.lux-badge-text{
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: rgba(255,255,255,.60);
+}
