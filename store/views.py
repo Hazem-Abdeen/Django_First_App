@@ -7,7 +7,6 @@ from decimal import Decimal
 from django.shortcuts import redirect
 from django.views.generic import DetailView, TemplateView, UpdateView, ListView
 
-
 class HomeView(ListView):
     model = Product
     template_name = "store/home.html"
