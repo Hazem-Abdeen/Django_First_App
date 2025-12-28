@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">Sign Up</h1>
+    <p class="auth-sub">Create your account to start browsing.</p>
+
+    {% if form.non_field_errors %}
+      <div class="auth-errors">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'account_signup' %}" class="auth-form">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {% if form.email.errors %}<div class="auth-errors mt-2">{{ form.email.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {% if form.username.errors %}<div class="auth-errors mt-2">{{ form.username.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.password1.label_tag }}
+        {{ form.password1 }}
+        {% if form.password1.errors %}<div class="auth-errors mt-2">{{ form.password1.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.password2.label_tag }}
+        {{ form.password2 }}
+        {% if form.password2.errors %}<div class="auth-errors mt-2">{{ form.password2.errors }}</div>{% endif %}
+      </div>
+
+      <div class="auth-actions">
+        <button class="auth-btn" type="submit">Create Account</button>
+        <a class="auth-link" href="{% url 'account_login' %}">Already have an account?</a>
+      </div>
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

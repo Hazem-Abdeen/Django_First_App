@@ -29,14 +29,28 @@
       </button>
     </form>
 
-      <div class="d-flex gap-2">
-        <a href="{% url 'cart-detail' %}" class="cart-icon position-relative" aria-label="Basket">
-          <i class="bi bi-bag"></i>
-          {% if cart_count > 0 %}
-            <span class="cart-badge">{{ cart_count }}</span>
-          {% endif %}
+    <div class="d-flex gap-2 align-items-center">
+        {% if user.is_authenticated %}
+        <span class="text-white-50 small d-none d-lg-inline">
+        Hi, {{ user.username }}
+        </span>
+        <a href="{% url 'account_logout' %}" class="btn btn-outline-light btn-sm">
+        Logout
         </a>
-      </div>
+        {% else %}
+        <a href="{% url 'account_login' %}" class="btn btn-outline-light btn-sm">
+        Login
+        </a>
+        {% endif %}
+
+        <a href="{% url 'cart-detail' %}" class="cart-icon position-relative" aria-label="Basket">
+        <i class="bi bi-bag"></i>
+        {% if cart_count|default:0|add:0 > 0 %}
+        <span class="cart-badge">{{ cart_count }}</span>
+        {% endif %}
+        </a>
+    </div>
+
     </div>
   </div>
 </nav>

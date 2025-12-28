@@ -1,17 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load i18n %}
 
-<h2>Login</h2>
+{% block title %}Login{% endblock %}
 
-<form method="post" action="{% url 'account_login' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">Login</h1>
+    <p class="auth-sub">Welcome back. Enter your details to access your account.</p>
 
-</body>
-</html>
+    {% if form.non_field_errors %}
+      <div class="auth-errors">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'account_login' %}" class="auth-form">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        {{ form.login.label_tag }}
+        {{ form.login }}
+        {% if form.login.errors %}<div class="auth-errors mt-2">{{ form.login.errors }}</div>{% endif %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.password.label_tag }}
+        {{ form.password }}
+        {% if form.password.errors %}<div class="auth-errors mt-2">{{ form.password.errors }}</div>{% endif %}
+      </div>
+
+      <div class="auth-row">
+        <label class="auth-remember">
+          {{ form.remember }}
+          <span>Remember me</span>
+        </label>
+
+        <a class="auth-link" href="{% url 'account_reset_password' %}">Forgot your password?</a>
+      </div>
+
+      <div class="auth-actions">
+        <button class="auth-btn" type="submit">Login</button>
+        <a class="auth-link" href="{% url 'account_signup' %}">Create account</a>
+      </div>
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

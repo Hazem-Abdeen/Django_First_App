@@ -1,5 +1,8 @@
 from django.db import models
 
+from storefront import settings
+
+
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
     discount = models.FloatField()
@@ -21,15 +24,7 @@ class Product(models.Model):
 
 
 class Customer(models.Model):
-    MEMBERSHIP_BRONZE = 'B'
-    MEMBERSHIP_SILVER = 'S'
-    MEMBERSHIP_GOLD = 'G'
 
-    MEMBERSHIP_CHOICES = [
-        (MEMBERSHIP_BRONZE, 'Bronze'),
-        (MEMBERSHIP_SILVER, 'Silver'),
-        (MEMBERSHIP_GOLD, 'Gold'),
-    ]
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
@@ -69,10 +64,40 @@ class OrderItem(models.Model):
 
 
 class Cart(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="cart"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Cart({self.user})"
+
+    @property
+    def total_items(self):
+        return sum(i.quantity for i in self.items.all())
+
+    @property
+    def subtotal(self):
+        return sum(i.product.unit_price * i.quantity for i in self.items.select_related("product"))
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.PROTECT)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    quantity = models.PositiveSmallIntegerField()
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+    product = models.ForeignKey("Product", on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField(default=1)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["cart", "product"], name="unique_cart_product")
+        ]
+
+    @property
+    def line_total(self):
+        return self.product.unit_price * self.quantity

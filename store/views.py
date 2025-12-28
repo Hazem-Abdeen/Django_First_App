@@ -48,7 +48,7 @@ class CartAddView(View):
         request.session.modified = True
         return redirect("cart-detail")
 
-class CartDetailView(TemplateView):
+class CartDetailView(LoginRequiredMixin , TemplateView):
     template_name = "store/cart_detail.html"
 
     def get_context_data(self, **kwargs):

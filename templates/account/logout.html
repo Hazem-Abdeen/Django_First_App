@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Logout{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">Logout</h1>
+    <p class="auth-sub">Are you sure you want to log out?</p>
+
+    <form method="post" action="{% url 'account_logout' %}" class="auth-form">
+      {% csrf_token %}
+
+      <div class="auth-actions">
+        <button class="auth-btn" type="submit">Yes, logout</button>
+        <a class="auth-link" href="{% url 'home' %}">Cancel</a>
+      </div>
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+      {% endif %}
+    </form>
+
+    <p class="auth-muted">You can log back in anytime.</p>
+  </div>
+</div>
+{% endblock %}
