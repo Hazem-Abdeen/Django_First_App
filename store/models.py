@@ -1,7 +1,5 @@
 from django.db import models
-
-from storefront import settings
-
+from django.conf import settings
 
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
@@ -77,11 +75,23 @@ class Cart(models.Model):
 
     @property
     def total_items(self):
-        return sum(i.quantity for i in self.items.all())
+        total = 0
+
+        for item in self.items.all():
+            total = total + item.quantity
+
+        return total
 
     @property
     def subtotal(self):
-        return sum(i.product.unit_price * i.quantity for i in self.items.select_related("product"))
+        total = 0
+
+        for item in self.items.select_related("product"):
+            price = item.product.unit_price
+            quantity = item.quantity
+            total = total + (price * quantity)
+
+        return total
 
 
 class CartItem(models.Model):
