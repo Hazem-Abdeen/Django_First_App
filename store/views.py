@@ -59,13 +59,16 @@ class CartAddView(LoginRequiredMixin, View):
 
         cart = get_or_create_cart(request.user)
 
-        item, created = CartItem.objects.select_for_update().get_or_create(
-            cart=cart, product=product,
-            defaults={"quantity": qty}
-        )
-        if not created:
-            item.quantity += qty
-            item.save(update_fields=["quantity"])
+        try:
+            item = CartItem.objects.get(cart=cart, product=product)
+            created = False
+        except CartItem.DoesNotExist:
+            item = CartItem.objects.create(
+                cart=cart,
+                product=product,
+                quantity=qty
+            )
+            created = True
 
         return redirect("cart-detail")
 
@@ -114,13 +117,17 @@ class CartIncrementView(LoginRequiredMixin, View):
         cart = get_or_create_cart(request.user)
         product = get_object_or_404(Product, id=product_id)
 
-        item, created = CartItem.objects.select_for_update().get_or_create(
-            cart=cart, product=product,
-            defaults={"quantity": 1}
-        )
-        if not created:
+        try:
+            item = CartItem.objects.get(cart=cart, product=product)
+        except CartItem.DoesNotExist:
+            item = CartItem.objects.create(
+                cart=cart,
+                product=product,
+                quantity=1
+            )
+        else:
             item.quantity += 1
-            item.save(update_fields=["quantity"])
+            item.save()
 
         return redirect("cart-detail")
 
@@ -130,16 +137,15 @@ class CartDecrementView(LoginRequiredMixin, View):
     def post(self, request, product_id):
         cart = get_or_create_cart(request.user)
 
-        item = CartItem.objects.select_for_update().filter(
-            cart=cart, product_id=product_id
-        ).first()
+        item = CartItem.objects.filter(cart=cart, product_id=product_id).first()
 
-        if item:
-            item.quantity -= 1
-            if item.quantity <= 0:
+        if item is not None:
+            item.quantity = item.quantity - 1
+
+            if item.quantity == 0:
                 item.delete()
             else:
-                item.save(update_fields=["quantity"])
+                item.save()
 
         return redirect("cart-detail")
 

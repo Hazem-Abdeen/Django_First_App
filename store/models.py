@@ -62,13 +62,24 @@ class OrderItem(models.Model):
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="cart"
+        related_name="carts"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Status(models.TextChoices):
+        OPENED = "OPENED", "Opened"
+        FROZEN = "FROZEN", "Frozen"
+
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.OPENED,
+        db_index=True
+    )
 
     def __str__(self):
         return f"Cart({self.user})"
@@ -92,7 +103,6 @@ class Cart(models.Model):
             total = total + (price * quantity)
 
         return total
-
 
 class CartItem(models.Model):
     cart = models.ForeignKey(
