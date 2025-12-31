@@ -1,11 +1,15 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import View
 from decimal import Decimal
 from django.shortcuts import redirect
 from django.views.generic import DetailView, TemplateView, UpdateView, ListView
-from .models import Product, CartItem
+
+from .forms import ShippingAddressForm
+from .models import Product, CartItem, Cart
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.db import transaction
@@ -156,3 +160,26 @@ class CartRemoveItemView(LoginRequiredMixin, View):
         cart = get_or_create_cart(request.user)
         CartItem.objects.filter(cart=cart, product_id=product_id).delete()
         return redirect("cart-detail")
+
+@login_required
+def checkout_address(request):
+    cart = get_or_create_cart(request.user)
+
+    # Only allow address entry for OPENED cart
+    if cart.status != Cart.Status.OPENED:
+        raise Http404("This cart is not editable.")
+
+    address = getattr(cart, "shipping_address", None)
+
+    if request.method == "POST":
+        form = ShippingAddressForm(request.POST, instance=address)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.user = request.user
+            obj.cart = cart
+            obj.save()
+            return redirect("checkout-review")
+    else:
+        form = ShippingAddressForm(instance=address)
+
+    return render(request, "store/checkout_address.html", {"form": form, "cart": cart})

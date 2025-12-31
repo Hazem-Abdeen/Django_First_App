@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Shipping Address</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Continue</button>
+  </form>
+
+  <hr>
+  <p>Cart subtotal: {{ cart.subtotal }}</p>
+{% endblock %}

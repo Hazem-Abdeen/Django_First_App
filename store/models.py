@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models import Q
 
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
@@ -81,6 +82,15 @@ class Cart(models.Model):
         db_index=True
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user"],
+                condition=Q(status="OPENED"),
+                name="unique_opened_cart_per_user",
+            )
+        ]
+
     def __str__(self):
         return f"Cart({self.user})"
 
@@ -121,3 +131,35 @@ class CartItem(models.Model):
     @property
     def line_total(self):
         return self.product.unit_price * self.quantity
+
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="shipping_addresses"
+    )
+
+    cart = models.OneToOneField(   # one shipping address per cart
+        Cart,
+        on_delete=models.CASCADE,
+        related_name="shipping_address"
+    )
+
+    full_name = models.CharField(max_length=255)
+    phone = models.CharField(max_length=30)
+
+    country = models.CharField(max_length=100, default="Jordan")
+    city = models.CharField(max_length=100)
+    area = models.CharField(max_length=100, blank=True)
+    street = models.CharField(max_length=255)
+    building = models.CharField(max_length=50, blank=True)
+    apartment = models.CharField(max_length=50, blank=True)
+    postal_code = models.CharField(max_length=20, blank=True)
+
+    notes = models.TextField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"ShippingAddress({self.user}) for Cart({self.cart_id})"

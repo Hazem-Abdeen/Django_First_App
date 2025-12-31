@@ -1,9 +1,8 @@
 from store.models import Cart
 
 def get_or_create_cart(user):
-    try:
-        cart = Cart.objects.get(user=user)
-    except Cart.DoesNotExist:
-        cart = Cart.objects.create(user=user)
-
+    cart, created = Cart.objects.get_or_create(
+        user=user,
+        status=Cart.Status.OPENED
+    )
     return cart
