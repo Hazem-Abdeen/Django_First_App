@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Review Order</h2>
+
+<h3>Shipping Address</h3>
+<p>
+  <strong>{{ address.full_name }}</strong><br>
+  {{ address.phone }}<br>
+  {{ address.country }}, {{ address.city }}{% if address.area %}, {{ address.area }}{% endif %}<br>
+  {{ address.street }}{% if address.building %}, Building {{ address.building }}{% endif %}
+  {% if address.apartment %}, Apt {{ address.apartment }}{% endif %}<br>
+  {% if address.postal_code %}{{ address.postal_code }}<br>{% endif %}
+  {% if address.notes %}<em>{{ address.notes }}</em>{% endif %}
+</p>
+
+<h3>Items</h3>
+<ul>
+  {% for item in items %}
+    <li>
+      {{ item.product.title }} — Qty: {{ item.quantity }} — total: {{ item.line_total }}
+    </li>
+  {% empty %}
+    <li>No items in cart.</li>
+  {% endfor %}
+</ul>
+
+<p><strong>Subtotal:</strong> {{ cart.subtotal }}</p>
+
+<form method="post" action="{% url 'place-order' %}">
+  {% csrf_token %}
+  <button type="submit">Place Order</button>
+</form>
+
+{% endblock %}

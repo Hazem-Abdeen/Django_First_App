@@ -80,19 +80,28 @@
       </table>
     </div>
 
-    <!-- Total + Clear -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mt-4">
-      <h4 class="m-0">
-        Total: <span class="fw-bold">{{ total }}</span>
-      </h4>
+    <!-- Total + Clear + Checkout -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mt-4">
+  <h4 class="m-0">
+    Total: <span class="fw-bold">{{ total }}</span>
+  </h4>
 
-      <form method="post" action="{% url 'cart-clear' %}" class="m-0">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger">
-          <i class="bi bi-x-circle"></i> Clear basket
-        </button>
-      </form>
-    </div>
+  <div class="d-flex gap-2">
+    <!-- Checkout -->
+    <a href="{% url 'checkout-address' %}" class="btn btn-success">
+      <i class="bi bi-bag-check"></i> Checkout
+    </a>
+
+    <!-- Clear -->
+    <form method="post" action="{% url 'cart-clear' %}" class="m-0">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">
+        <i class="bi bi-x-circle"></i> Clear basket
+      </button>
+    </form>
+  </div>
+</div>
+
 
   {% else %}
     <div class="alert alert-info">

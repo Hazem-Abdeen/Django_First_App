@@ -9,7 +9,7 @@ from django.shortcuts import redirect
 from django.views.generic import DetailView, TemplateView, UpdateView, ListView
 
 from .forms import ShippingAddressForm
-from .models import Product, CartItem, Cart
+from .models import Product, CartItem, Cart, Customer, Order, OrderItem
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.db import transaction
@@ -183,3 +183,74 @@ def checkout_address(request):
         form = ShippingAddressForm(instance=address)
 
     return render(request, "store/checkout_address.html", {"form": form, "cart": cart})
+
+@login_required
+def checkout_review(request):
+    cart = get_or_create_cart(request.user)
+
+    # Only review OPENED cart
+    if cart.status != Cart.Status.OPENED:
+        raise Http404("Cart is not editable.")
+
+    # Must have shipping address first
+    address = getattr(cart, "shipping_address", None)
+    if not address:
+        return redirect("checkout-address")
+
+    items = cart.items.select_related("product")
+
+    return render(request, "store/checkout_review.html", {
+        "cart": cart,
+        "items": items,
+        "address": address,
+    })
+
+@require_POST
+@login_required
+@transaction.atomic
+def place_order(request):
+    cart = get_or_create_cart(request.user)
+
+    if cart.status != Cart.Status.OPENED:
+        raise Http404("Cart is not editable.")
+
+    if cart.total_items <= 0:
+        return redirect("cart-detail")
+
+    address = getattr(cart, "shipping_address", None)
+    if not address:
+        return redirect("checkout-address")
+
+    # Get/Create Customer profile linked to this user
+    customer, _ = Customer.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "first_name": request.user.first_name or "",
+            "last_name": request.user.last_name or "",
+            "email": request.user.email or f"user{request.user.id}@example.com",
+            "phone": address.phone,
+        }
+    )
+
+    # Create order
+    order = Order.objects.create(customer=customer)
+
+    # Copy items to OrderItem (snapshot unit_price now)
+    items = cart.items.select_related("product")
+    for item in items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            unit_price=item.product.unit_price,
+        )
+
+    # Freeze cart
+    cart.status = Cart.Status.FROZEN
+    cart.save(update_fields=["status"])
+
+    return redirect("checkout-success")
+
+@login_required
+def checkout_success(request):
+    return render(request, "store/checkout_success.html")

@@ -18,4 +18,8 @@ urlpatterns = [
     path("cart/clear/", CartClearView.as_view(), name="cart-clear"),
     path("products/<int:id>/edit/", ProductUpdateView.as_view(), name="product-edit"),
     path("checkout/address/", views.checkout_address, name="checkout-address"),
+    path("checkout/review/", views.checkout_review, name="checkout-review"),
+    path("checkout/place-order/", views.place_order, name="place-order"),
+    path("checkout/success/", views.checkout_success, name="checkout-success"),
+
 ]
