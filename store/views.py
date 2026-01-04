@@ -165,7 +165,6 @@ class CartRemoveItemView(LoginRequiredMixin, View):
 def checkout_address(request):
     cart = get_or_create_cart(request.user)
 
-    # Only allow address entry for OPENED cart
     if cart.status != Cart.Status.OPENED:
         raise Http404("This cart is not editable.")
 
@@ -188,9 +187,8 @@ def checkout_address(request):
 def checkout_review(request):
     cart = get_or_create_cart(request.user)
 
-    # Only review OPENED cart
-    if cart.status != Cart.Status.OPENED:
-        raise Http404("Cart is not editable.")
+    # if cart.status != Cart.Status.OPENED:
+    #     raise Http404("Cart is not editable.")
 
     # Must have shipping address first
     address = getattr(cart, "shipping_address", None)
@@ -211,11 +209,11 @@ def checkout_review(request):
 def place_order(request):
     cart = get_or_create_cart(request.user)
 
-    if cart.status != Cart.Status.OPENED:
-        raise Http404("Cart is not editable.")
-
-    if cart.total_items <= 0:
-        return redirect("cart-detail")
+    # if cart.status != Cart.Status.OPENED:
+    #     raise Http404("Cart is not editable.")
+    #
+    # if cart.total_items <= 0:
+    #     return redirect("cart-detail")
 
     address = getattr(cart, "shipping_address", None)
     if not address:
