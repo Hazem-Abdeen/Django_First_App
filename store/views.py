@@ -4,16 +4,17 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views import View
-from decimal import Decimal
 from django.shortcuts import redirect
 from django.views.generic import DetailView, TemplateView, UpdateView, ListView
-
 from .forms import ShippingAddressForm
 from .models import Product, CartItem, Cart, Customer, Order, OrderItem
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.db import transaction
 from .cart_utils import get_or_create_cart
+from decimal import Decimal
+from django.views.generic import ListView
+from .models import Product, Brand
 
 class HomeView(ListView):
     model = Product
@@ -21,14 +22,62 @@ class HomeView(ListView):
     context_object_name = "products"
 
     def get_queryset(self):
-        qs = Product.objects.all().order_by("-id")
+        qs = Product.objects.select_related("brand").all().order_by("-id")
 
-        q = self.request.GET.get("q", "").strip()
-
+        # Search
+        q = (self.request.GET.get("q") or "").strip()
         if q:
             qs = qs.filter(title__icontains=q)
 
+        #CHECKBOX filters
+        brands_raw = self.request.GET.getlist("brand")     # ['1','2',''] possible
+        genders_raw = self.request.GET.getlist("gender")   # ['men','women',''] possible
+
+        # keep only valid values (prevents "" crash)
+        brands = [b for b in brands_raw if str(b).isdigit()]
+        allowed_genders = {"men", "women", "unisex"}
+        genders = [g for g in genders_raw if g in allowed_genders]
+
+        if brands:
+            qs = qs.filter(brand_id__in=brands)
+
+        if genders:
+            qs = qs.filter(gender__in=genders)
+
+        #Price range
+        min_price = (self.request.GET.get("min_price") or "").strip()
+        max_price = (self.request.GET.get("max_price") or "").strip()
+
+        if min_price:
+            try:
+                qs = qs.filter(unit_price__gte=Decimal(min_price))
+            except:
+                pass
+
+        if max_price:
+            try:
+                qs = qs.filter(unit_price__lte=Decimal(max_price))
+            except:
+                pass
+
         return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        # Only what we use
+        ctx["brands"] = Brand.objects.order_by("name")
+
+        # Keep selected values checked
+        ctx["selected"] = {
+            "q": self.request.GET.get("q", ""),
+            "brand": self.request.GET.getlist("brand"),
+            "gender": self.request.GET.getlist("gender"),
+            "min_price": self.request.GET.get("min_price", ""),
+            "max_price": self.request.GET.get("max_price", ""),
+        }
+
+        return ctx
 
 class ProductDetailView(DetailView):
     model = Product

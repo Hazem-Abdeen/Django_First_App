@@ -24,3 +24,23 @@
   line-height: 1;
   border: 1px solid rgba(255,255,255,0.25);
 }
+/* HERO FILTER POSITION (TOP-LEFT ON HERO) */
+.hero{
+  position: relative;
+}
+
+.hero-filters{
+  position: absolute;
+  left: 48px;
+  top: 110px;              /* under navbar */
+  z-index: 2;
+  width: 280px;
+}
+
+/* Make hero filter card more "glass" */
+.filter-card--hero{
+  background: rgba(10,14,18,.55);
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
